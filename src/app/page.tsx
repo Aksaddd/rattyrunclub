@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
+import Countdown from "@/components/Countdown";
 import { getContent } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export default async function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* ── Left Panel ── */}
-      <div className="relative flex w-full flex-col justify-between p-6 sm:p-8 md:w-[42%] md:p-10 lg:p-12">
+      <div className="relative flex w-full flex-col justify-between p-8 sm:p-10 md:w-[42%] md:p-12 lg:p-16">
         <Nav />
 
         <nav className="mt-16 flex flex-col gap-4 md:mt-0">
@@ -42,35 +43,39 @@ export default async function Home() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <path d="M12 21c0 0-8-6-8-12C4 5 7 3 12 6c5-3 8-1 8 3 0 6-8 12-8 12z" />
-            </svg>
-          </div>
-
           <div className="flex flex-col gap-1">
             <p className="text-[13px] font-medium uppercase tracking-[0.15em]">
-              Weekly Runs
+              Upcoming Run
+            </p>
+            <Countdown targetDate={home.upcomingRun.date} />
+            <p className="text-[14px] font-light leading-relaxed text-muted">
+              {home.upcomingRun.time}
             </p>
             <p className="text-[14px] font-light leading-relaxed text-muted">
-              {home.weeklyRuns.day} — {home.weeklyRuns.time}
-            </p>
-            <p className="text-[14px] font-light leading-relaxed text-muted">
-              {home.weeklyRuns.location}
+              {home.upcomingRun.location}
             </p>
           </div>
+
+          {home.upcomingRun.mapEmbedUrl && (
+            <div className="overflow-hidden rounded border border-border">
+              <iframe
+                src={home.upcomingRun.mapEmbedUrl}
+                width="100%"
+                height="160"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Run location"
+              />
+            </div>
+          )}
 
           <p className="max-w-[320px] text-[14px] font-light leading-[1.7] text-muted">
             {home.description}
           </p>
 
-          <div className="flex items-center gap-4 border-t border-border pt-4">
+          <div className="flex flex-wrap items-center gap-4 border-t border-border pt-4">
             <a
               href={instagram}
               target="_blank"

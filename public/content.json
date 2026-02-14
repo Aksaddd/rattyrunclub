@@ -7,10 +7,11 @@
   "location": "NYC",
   "home": {
     "heroImage": "/default-hero.svg",
-    "weeklyRuns": {
-      "day": "Every Saturday",
+    "upcomingRun": {
+      "date": "2026-02-21T08:00:00",
       "time": "8:00 AM",
-      "location": "Central Park, NYC"
+      "location": "Central Park, NYC",
+      "mapEmbedUrl": ""
     },
     "description": "A community run club in New York City. All paces welcome. We run together, we grow together."
   },

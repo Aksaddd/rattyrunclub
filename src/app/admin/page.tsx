@@ -146,7 +146,7 @@ interface Content {
   location: string;
   home: {
     heroImage: string;
-    weeklyRuns: { day: string; time: string; location: string };
+    upcomingRun: { date: string; time: string; location: string; mapEmbedUrl: string };
     description: string;
   };
   about: {
@@ -364,45 +364,74 @@ function AdminPanel() {
             onUpload={() => uploadImage("home.heroImage")}
             onRemove={() => removeImage("home.heroImage")}
           />
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+              Run Date &amp; Time (for countdown)
+            </label>
+            <input
+              type="datetime-local"
+              value={content.home.upcomingRun.date.slice(0, 16)}
+              onChange={(e) =>
+                update((c) => ({
+                  ...c,
+                  home: {
+                    ...c.home,
+                    upcomingRun: { ...c.home.upcomingRun, date: e.target.value + ":00" },
+                  },
+                }))
+              }
+              className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none focus:border-foreground"
+            />
+          </div>
           <Field
-            label="Run Day"
-            value={content.home.weeklyRuns.day}
+            label="Display Time (e.g. 8:00 AM)"
+            value={content.home.upcomingRun.time}
             onChange={(v) =>
               update((c) => ({
                 ...c,
                 home: {
                   ...c.home,
-                  weeklyRuns: { ...c.home.weeklyRuns, day: v },
-                },
-              }))
-            }
-          />
-          <Field
-            label="Run Time"
-            value={content.home.weeklyRuns.time}
-            onChange={(v) =>
-              update((c) => ({
-                ...c,
-                home: {
-                  ...c.home,
-                  weeklyRuns: { ...c.home.weeklyRuns, time: v },
+                  upcomingRun: { ...c.home.upcomingRun, time: v },
                 },
               }))
             }
           />
           <Field
             label="Run Location"
-            value={content.home.weeklyRuns.location}
+            value={content.home.upcomingRun.location}
             onChange={(v) =>
               update((c) => ({
                 ...c,
                 home: {
                   ...c.home,
-                  weeklyRuns: { ...c.home.weeklyRuns, location: v },
+                  upcomingRun: { ...c.home.upcomingRun, location: v },
                 },
               }))
             }
           />
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+              Google Maps Embed URL
+            </label>
+            <input
+              type="text"
+              value={content.home.upcomingRun.mapEmbedUrl}
+              onChange={(e) =>
+                update((c) => ({
+                  ...c,
+                  home: {
+                    ...c.home,
+                    upcomingRun: { ...c.home.upcomingRun, mapEmbedUrl: e.target.value },
+                  },
+                }))
+              }
+              placeholder="Paste Google Maps embed URL here"
+              className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+            />
+            <p className="text-[11px] font-light text-muted">
+              Google Maps → Share → Embed → copy the src URL from the iframe code
+            </p>
+          </div>
           <Field
             label="Description"
             value={content.home.description}

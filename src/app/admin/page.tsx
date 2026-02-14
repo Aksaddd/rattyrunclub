@@ -209,7 +209,7 @@ function AdminPanel() {
   useEffect(() => {
     fetch("/api/content")
       .then((r) => r.json())
-      .then(setContent);
+      .then((data) => setContent({ ...data, schedule: data.schedule || [] }));
   }, []);
 
   const save = useCallback(async (data: Content) => {
@@ -648,7 +648,11 @@ function ScheduleAdmin({
       const form = new FormData();
       form.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: form });
-      const { path } = await res.json();
+      if (!res.ok) {
+        alert("Upload failed. You may need to log in again.");
+        return;
+      }
+      const data = await res.json();
       const event = content.schedule.find((e) => e.id === eventId);
       if (event?.image?.startsWith("/uploads/")) {
         await fetch("/api/upload", {
@@ -660,7 +664,7 @@ function ScheduleAdmin({
       const updated = {
         ...content,
         schedule: content.schedule.map((e) =>
-          e.id === eventId ? { ...e, image: path } : e
+          e.id === eventId ? { ...e, image: data.path } : e
         ),
       };
       update(() => updated);

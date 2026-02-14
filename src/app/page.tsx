@@ -92,6 +92,13 @@ export default async function Home() {
             <span className="text-[13px] font-light tracking-[0.06em] text-muted">
               {location}
             </span>
+            <span className="text-[13px] text-muted">·</span>
+            <Link
+              href="/admin"
+              className="text-[13px] font-light tracking-[0.06em] text-muted/40 transition-colors hover:text-muted"
+            >
+              Manage
+            </Link>
           </div>
         </div>
       </div>

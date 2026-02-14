@@ -1,3 +1,18 @@
+export interface GalleryItem {
+  id: string;
+  image: string;
+  caption: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  subtitle: string;
+  price: string;
+  mainImage: string;
+  images: string[];
+}
+
 export interface SiteContent {
   clubName: string;
   tagline: string;
@@ -17,6 +32,8 @@ export interface SiteContent {
     paragraphs: string[];
     imageCaption: string;
   };
+  gallery: GalleryItem[];
+  products: Product[];
 }
 
 export async function getContent(): Promise<SiteContent> {

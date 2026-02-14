@@ -137,6 +137,21 @@ function AuthGate({ onAuthenticated }: { onAuthenticated: () => void }) {
    Admin panel (existing)
    ═══════════════════════════════════════════ */
 
+interface GalleryItem {
+  id: string;
+  image: string;
+  caption: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  subtitle: string;
+  price: string;
+  mainImage: string;
+  images: string[];
+}
+
 interface Content {
   clubName: string;
   tagline: string;
@@ -156,6 +171,8 @@ interface Content {
     paragraphs: string[];
     imageCaption: string;
   };
+  gallery: GalleryItem[];
+  products: Product[];
 }
 
 export default function AdminPage() {
@@ -543,8 +560,328 @@ function AdminPanel() {
           </div>
         </Section>
 
+        {/* ── Gallery ── */}
+        <Section title="Gallery">
+          <GalleryAdmin content={content} update={update} save={save} />
+        </Section>
+
+        {/* ── Products ── */}
+        <Section title="Products (Shop)">
+          <ProductsAdmin content={content} update={update} save={save} />
+        </Section>
+
         <ChangePassword />
       </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Gallery Admin
+   ═══════════════════════════════════════════ */
+
+function GalleryAdmin({
+  content,
+  update,
+  save,
+}: {
+  content: Content;
+  update: (fn: (c: Content) => Content) => void;
+  save: (data: Content) => Promise<void>;
+}) {
+  const addImage = async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const { path } = await res.json();
+      const item: GalleryItem = { id: Date.now().toString(), image: path, caption: "" };
+      const updated = { ...content, gallery: [...content.gallery, item] };
+      update(() => updated);
+      await save(updated);
+    };
+    input.click();
+  };
+
+  const removeImage = async (id: string) => {
+    const item = content.gallery.find((g) => g.id === id);
+    if (item?.image.startsWith("/uploads/")) {
+      await fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filePath: item.image }),
+      });
+    }
+    const updated = { ...content, gallery: content.gallery.filter((g) => g.id !== id) };
+    update(() => updated);
+    await save(updated);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {content.gallery.map((item) => (
+        <div key={item.id} className="flex gap-3 border border-border p-3">
+          <img src={item.image} alt="" className="h-24 w-24 flex-shrink-0 object-cover" />
+          <div className="flex flex-1 flex-col gap-2">
+            <input
+              type="text"
+              value={item.caption}
+              onChange={(e) => {
+                const gallery = content.gallery.map((g) =>
+                  g.id === item.id ? { ...g, caption: e.target.value } : g
+                );
+                update((c) => ({ ...c, gallery }));
+              }}
+              placeholder="Caption (optional)"
+              className="w-full border border-border bg-background px-3 py-1.5 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+            />
+            <button
+              onClick={() => removeImage(item.id)}
+              className="self-start text-[11px] font-medium uppercase tracking-[0.12em] text-red-500 hover:text-red-700"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      ))}
+      <button
+        onClick={addImage}
+        className="self-start border border-dashed border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted transition-colors hover:border-foreground hover:text-foreground"
+      >
+        + Add Image
+      </button>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Products Admin
+   ═══════════════════════════════════════════ */
+
+function ProductsAdmin({
+  content,
+  update,
+  save,
+}: {
+  content: Content;
+  update: (fn: (c: Content) => Content) => void;
+  save: (data: Content) => Promise<void>;
+}) {
+  const addProduct = () => {
+    const product: Product = {
+      id: Date.now().toString(),
+      name: "",
+      subtitle: "",
+      price: "",
+      mainImage: "",
+      images: [],
+    };
+    update((c) => ({ ...c, products: [...c.products, product] }));
+  };
+
+  const removeProduct = async (id: string) => {
+    const product = content.products.find((p) => p.id === id);
+    if (product) {
+      const allImages = [product.mainImage, ...product.images].filter(
+        (img) => img && img.startsWith("/uploads/")
+      );
+      for (const img of allImages) {
+        await fetch("/api/upload", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filePath: img }),
+        });
+      }
+    }
+    const updated = { ...content, products: content.products.filter((p) => p.id !== id) };
+    update(() => updated);
+    await save(updated);
+  };
+
+  const updateProduct = (id: string, partial: Partial<Product>) => {
+    update((c) => ({
+      ...c,
+      products: c.products.map((p) => (p.id === id ? { ...p, ...partial } : p)),
+    }));
+  };
+
+  const uploadMainImage = (productId: string) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const { path } = await res.json();
+      const product = content.products.find((p) => p.id === productId);
+      if (product?.mainImage?.startsWith("/uploads/")) {
+        await fetch("/api/upload", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filePath: product.mainImage }),
+        });
+      }
+      const updated = {
+        ...content,
+        products: content.products.map((p) =>
+          p.id === productId ? { ...p, mainImage: path } : p
+        ),
+      };
+      update(() => updated);
+      await save(updated);
+    };
+    input.click();
+  };
+
+  const addSlideshowImage = (productId: string) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const { path } = await res.json();
+      const updated = {
+        ...content,
+        products: content.products.map((p) =>
+          p.id === productId ? { ...p, images: [...p.images, path] } : p
+        ),
+      };
+      update(() => updated);
+      await save(updated);
+    };
+    input.click();
+  };
+
+  const removeSlideshowImage = async (productId: string, index: number) => {
+    const product = content.products.find((p) => p.id === productId);
+    if (!product) return;
+    const img = product.images[index];
+    if (img?.startsWith("/uploads/")) {
+      await fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filePath: img }),
+      });
+    }
+    const updated = {
+      ...content,
+      products: content.products.map((p) =>
+        p.id === productId ? { ...p, images: p.images.filter((_, i) => i !== index) } : p
+      ),
+    };
+    update(() => updated);
+    await save(updated);
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {content.products.map((product) => (
+        <div key={product.id} className="flex flex-col gap-4 border border-border p-4">
+          <div className="flex items-start justify-between">
+            <p className="text-[12px] font-medium uppercase tracking-[0.12em]">
+              {product.name || "New Product"}
+            </p>
+            <button
+              onClick={() => removeProduct(product.id)}
+              className="text-[11px] font-medium uppercase tracking-[0.12em] text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </div>
+
+          {/* Main image */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+              Product Image
+            </label>
+            {product.mainImage ? (
+              <div className="flex items-start gap-3">
+                <img src={product.mainImage} alt="" className="h-28 w-28 object-cover" />
+                <button
+                  onClick={() => uploadMainImage(product.id)}
+                  className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted hover:text-foreground"
+                >
+                  Replace
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => uploadMainImage(product.id)}
+                className="flex h-28 w-28 items-center justify-center border border-dashed border-border text-[11px] text-muted hover:border-foreground hover:text-foreground"
+              >
+                + Upload
+              </button>
+            )}
+          </div>
+
+          <input
+            type="text"
+            value={product.name}
+            onChange={(e) => updateProduct(product.id, { name: e.target.value })}
+            placeholder="Product name"
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          <input
+            type="text"
+            value={product.subtitle}
+            onChange={(e) => updateProduct(product.id, { subtitle: e.target.value })}
+            placeholder="Short subtitle"
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          <input
+            type="text"
+            value={product.price}
+            onChange={(e) => updateProduct(product.id, { price: e.target.value })}
+            placeholder="Price (e.g. $48)"
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+
+          {/* Slideshow images */}
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+              Slideshow Images
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {product.images.map((img, i) => (
+                <div key={i} className="group relative">
+                  <img src={img} alt="" className="h-20 w-20 object-cover" />
+                  <button
+                    onClick={() => removeSlideshowImage(product.id, i)}
+                    className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => addSlideshowImage(product.id)}
+                className="flex h-20 w-20 items-center justify-center border border-dashed border-border text-[11px] text-muted hover:border-foreground hover:text-foreground"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <button
+        onClick={addProduct}
+        className="self-start border border-dashed border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted transition-colors hover:border-foreground hover:text-foreground"
+      >
+        + Add Product
+      </button>
     </div>
   );
 }

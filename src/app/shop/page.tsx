@@ -9,11 +9,11 @@ export default async function ShopPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="p-10 sm:p-12 md:p-14 lg:p-20">
+      <div className="px-[48px] pt-[40px] sm:px-[64px] sm:pt-[48px] md:px-[72px] md:pt-[56px] lg:px-[96px] lg:pt-[72px]">
         <Nav />
       </div>
 
-      <div className="px-10 pb-20 sm:px-12 md:px-14 lg:px-20">
+      <div className="px-[48px] pb-20 pt-10 sm:px-[64px] md:px-[72px] lg:px-[96px]">
         <h1 className="mb-12 text-[13px] font-semibold uppercase tracking-[0.2em]">
           Shop
         </h1>

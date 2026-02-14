@@ -18,11 +18,11 @@ export default async function ProductPage({
 
   return (
     <div className="min-h-screen">
-      <div className="p-10 sm:p-12 md:p-14 lg:p-20">
+      <div className="px-[48px] pt-[40px] sm:px-[64px] sm:pt-[48px] md:px-[72px] md:pt-[56px] lg:px-[96px] lg:pt-[72px]">
         <Nav />
       </div>
 
-      <div className="px-10 pb-8 sm:px-12 md:px-14 lg:px-20">
+      <div className="px-[48px] pb-8 pt-10 sm:px-[64px] md:px-[72px] lg:px-[96px]">
         <div className="flex flex-col gap-12 md:flex-row md:gap-16">
           {/* ── Left: Main image ── */}
           <div className="w-full md:w-1/2">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   verifyPassword,
+  changePassword,
   createSessionToken,
   verifySessionToken,
   setupAdmin,
@@ -129,6 +130,40 @@ export async function GET(req: NextRequest) {
   const authenticated = token ? await verifySessionToken(token) : false;
 
   return NextResponse.json({ authenticated, needsSetup });
+}
+
+// PATCH /api/auth — change password (must be authenticated)
+export async function PATCH(req: NextRequest) {
+  const token = req.cookies.get(SESSION_COOKIE)?.value;
+  if (!token || !(await verifySessionToken(token))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const { currentPassword, newPassword } = body;
+
+  if (!currentPassword || !newPassword) {
+    return NextResponse.json({ error: "Both passwords required" }, { status: 400 });
+  }
+  if (newPassword.length < 8) {
+    return NextResponse.json({ error: "New password must be at least 8 characters" }, { status: 400 });
+  }
+
+  const changed = await changePassword(currentPassword, newPassword);
+  if (!changed) {
+    return NextResponse.json({ error: "Current password is incorrect" }, { status: 401 });
+  }
+
+  // Issue new session token since secret rotated
+  const newToken = await createSessionToken();
+  const res = NextResponse.json({ ok: true });
+  res.cookies.set(SESSION_COOKIE, newToken, {
+    httpOnly: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60,
+  });
+  return res;
 }
 
 // DELETE /api/auth — logout

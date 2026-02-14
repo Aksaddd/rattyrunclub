@@ -521,8 +521,121 @@ function AdminPanel() {
             </button>
           </div>
         </Section>
+
+        <ChangePassword />
       </div>
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Change Password
+   ═══════════════════════════════════════════ */
+
+function ChangePassword() {
+  const [open, setOpen] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+
+    if (newPw !== confirmPw) {
+      setError("New passwords don't match");
+      return;
+    }
+
+    setSubmitting(true);
+    const res = await fetch("/api/auth", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword: currentPw, newPassword: newPw }),
+    });
+    const data = await res.json();
+    setSubmitting(false);
+
+    if (!res.ok) {
+      setError(data.error || "Something went wrong");
+      return;
+    }
+
+    setSuccess(true);
+    setCurrentPw("");
+    setNewPw("");
+    setConfirmPw("");
+    setTimeout(() => {
+      setSuccess(false);
+      setOpen(false);
+    }, 2000);
+  };
+
+  return (
+    <section className="mb-14">
+      <h2 className="mb-6 border-b border-border pb-3 text-[11px] font-medium uppercase tracking-[0.15em]">
+        Security
+      </h2>
+      {!open ? (
+        <button
+          onClick={() => setOpen(true)}
+          className="border border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted transition-colors hover:border-foreground hover:text-foreground"
+        >
+          Change Password
+        </button>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex max-w-[360px] flex-col gap-4">
+          <input
+            type="password"
+            placeholder="Current password"
+            value={currentPw}
+            onChange={(e) => setCurrentPw(e.target.value)}
+            required
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          <input
+            type="password"
+            placeholder="New password (min 8 characters)"
+            value={newPw}
+            onChange={(e) => setNewPw(e.target.value)}
+            required
+            minLength={8}
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          <input
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmPw}
+            onChange={(e) => setConfirmPw(e.target.value)}
+            required
+            minLength={8}
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          {error && <p className="text-[13px] font-light text-red-500">{error}</p>}
+          {success && <p className="text-[13px] font-light text-green-600">Password changed!</p>}
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="border border-foreground bg-foreground px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-background transition-opacity hover:opacity-80 disabled:opacity-50"
+            >
+              {submitting ? "..." : "Update Password"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setOpen(false); setError(""); }}
+              className="border border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted transition-colors hover:border-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+    </section>
   );
 }
 

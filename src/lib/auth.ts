@@ -54,6 +54,27 @@ export async function setupAdmin(password: string): Promise<boolean> {
   return true;
 }
 
+export async function changePassword(currentPassword: string, newPassword: string): Promise<boolean> {
+  const valid = await verifyPassword(currentPassword);
+  if (!valid) return false;
+
+  const creds = await getCredentials();
+  if (!creds) return false;
+
+  const salt = randomBytes(32).toString("hex");
+  const hash = hashPassword(newPassword, salt);
+  // Rotate session secret so old sessions are invalidated
+  const sessionSecret = randomBytes(48).toString("hex");
+
+  await saveCredentials({
+    adminPasswordHash: hash,
+    adminPasswordSalt: salt,
+    sessionSecret,
+  });
+
+  return true;
+}
+
 export async function verifyPassword(password: string): Promise<boolean> {
   const creds = await getCredentials();
   if (!creds) return false;

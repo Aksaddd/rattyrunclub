@@ -17,7 +17,7 @@ export default async function Home() {
       <div className="relative flex w-full flex-col justify-between px-[24px] py-[32px] sm:px-[32px] sm:py-[40px] md:w-[42%] md:px-[40px] md:py-[48px] lg:px-[48px] lg:py-[56px]">
         <Nav />
 
-        <nav className="mt-16 flex flex-col gap-4 md:mt-0">
+        <nav className="mt-16 flex flex-col gap-4 pl-1 md:mt-8">
           <Link
             href="/about"
             className="text-[15px] font-light tracking-[0.06em] text-foreground"

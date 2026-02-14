@@ -13,7 +13,7 @@ export default function Nav() {
       <Link href="/" className={isHome ? "pointer-events-none" : ""}>
         <svg
           viewBox="0 0 120 50"
-          className="h-14 w-auto md:h-16 lg:h-[72px]"
+          className="h-[90px] w-auto md:h-[102px] lg:h-[115px]"
           fill="currentColor"
           aria-label="Ratty Run"
         >

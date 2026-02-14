@@ -54,6 +54,12 @@ export default function Nav() {
         >
           Gallery
         </Link>
+        <Link
+          href="/contact"
+          className="text-[12px] font-medium uppercase tracking-[0.15em]"
+        >
+          Contact
+        </Link>
       </nav>
     </header>
   );

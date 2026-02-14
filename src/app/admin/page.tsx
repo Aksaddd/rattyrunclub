@@ -162,6 +162,7 @@ interface Content {
   home: {
     heroImage: string;
     logoImage: string;
+    logoPosition: { x: number; y: number };
     upcomingRun: { date: string; time: string; location: string; mapEmbedUrl: string };
     description: string;
   };

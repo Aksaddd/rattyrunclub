@@ -8,6 +8,7 @@
   "home": {
     "heroImage": "/default-hero.svg",
     "logoImage": "",
+    "logoPosition": { "x": 50, "y": 50 },
     "upcomingRun": {
       "date": "2026-02-21T08:00:00",
       "time": "8:00 AM",

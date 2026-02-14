@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Countdown from "@/components/Countdown";
+import DraggableLogo from "@/components/DraggableLogo";
 import { getContent } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -117,13 +118,11 @@ export default async function Home() {
             className="h-full w-full object-cover"
           />
           {home.logoImage && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <img
-                src={home.logoImage}
-                alt={clubName}
-                className="w-[60%] max-w-[480px] object-contain drop-shadow-lg"
-              />
-            </div>
+            <DraggableLogo
+              src={home.logoImage}
+              alt={clubName}
+              position={home.logoPosition ?? { x: 50, y: 50 }}
+            />
           )}
         </div>
       </div>

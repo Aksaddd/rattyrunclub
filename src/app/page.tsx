@@ -99,60 +99,22 @@ export default async function Home() {
       {/* ── Right Panel: Image ── */}
       <div className="hidden md:block md:w-[58%]">
         <div className="relative h-full w-full overflow-hidden bg-surface">
-          {home.heroImage ? (
-            <img
-              src={home.heroImage}
-              alt="Ratty Run"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex flex-col items-center gap-3">
-                <svg
-                  viewBox="0 0 200 80"
-                  className="w-48 opacity-[0.06]"
-                  fill="currentColor"
-                >
-                  <text
-                    x="10"
-                    y="35"
-                    fontSize="30"
-                    fontWeight="900"
-                    fontFamily="system-ui, sans-serif"
-                    letterSpacing="-1"
-                  >
-                    ratty
-                  </text>
-                  <text
-                    x="30"
-                    y="68"
-                    fontSize="30"
-                    fontWeight="900"
-                    fontFamily="system-ui, sans-serif"
-                    letterSpacing="-1"
-                  >
-                    run
-                  </text>
-                </svg>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
-                  Image coming soon
-                </p>
-              </div>
-            </div>
-          )}
+          <img
+            src={home.heroImage || "/default-hero.svg"}
+            alt="Ratty Run"
+            className="h-full w-full object-cover"
+          />
         </div>
       </div>
 
       {/* ── Mobile: Full-screen image behind content ── */}
       <div className="pointer-events-none fixed inset-0 -z-10 md:hidden">
         <div className="relative h-full w-full bg-surface opacity-30">
-          {home.heroImage && (
-            <img
-              src={home.heroImage}
-              alt="Ratty Run"
-              className="h-full w-full object-cover"
-            />
-          )}
+          <img
+            src={home.heroImage || "/default-hero.svg"}
+            alt="Ratty Run"
+            className="h-full w-full object-cover"
+          />
         </div>
       </div>
     </div>

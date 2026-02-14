@@ -113,9 +113,9 @@ export default function AdminPage() {
       }
 
       if (target === "home.heroImage") {
-        updated.home = { ...updated.home, heroImage: "" };
+        updated.home = { ...updated.home, heroImage: "/default-hero.svg" };
       } else {
-        updated.about = { ...updated.about, image: "" };
+        updated.about = { ...updated.about, image: "/default-about.svg" };
       }
 
       setContent(updated);

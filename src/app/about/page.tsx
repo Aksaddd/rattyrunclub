@@ -48,47 +48,11 @@ export default async function AboutPage() {
 
       {/* ── Right Panel: Image ── */}
       <div className="relative hidden md:block md:w-[55%]">
-        {about.image ? (
-          <img
-            src={about.image}
-            alt={about.heading}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-surface">
-            <div className="flex flex-col items-center gap-3">
-              <svg
-                viewBox="0 0 200 80"
-                className="w-48 opacity-[0.06]"
-                fill="currentColor"
-              >
-                <text
-                  x="10"
-                  y="35"
-                  fontSize="30"
-                  fontWeight="900"
-                  fontFamily="system-ui, sans-serif"
-                  letterSpacing="-1"
-                >
-                  ratty
-                </text>
-                <text
-                  x="30"
-                  y="68"
-                  fontSize="30"
-                  fontWeight="900"
-                  fontFamily="system-ui, sans-serif"
-                  letterSpacing="-1"
-                >
-                  run
-                </text>
-              </svg>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
-                Image coming soon
-              </p>
-            </div>
-          </div>
-        )}
+        <img
+          src={about.image || "/default-about.svg"}
+          alt={about.heading}
+          className="h-full w-full object-cover"
+        />
 
         {about.imageCaption && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent p-6">
@@ -101,19 +65,11 @@ export default async function AboutPage() {
 
       {/* ── Mobile: Image below text ── */}
       <div className="relative h-[50vh] w-full md:hidden">
-        {about.image ? (
-          <img
-            src={about.image}
-            alt={about.heading}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-surface">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
-              Image coming soon
-            </p>
-          </div>
-        )}
+        <img
+          src={about.image || "/default-about.svg"}
+          alt={about.heading}
+          className="h-full w-full object-cover"
+        />
       </div>
     </div>
   );

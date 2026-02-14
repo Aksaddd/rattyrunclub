@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
@@ -10,7 +11,12 @@ export async function GET() {
   return NextResponse.json(JSON.parse(data));
 }
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
+  const token = req.cookies.get(SESSION_COOKIE)?.value;
+  if (!token || !(await verifySessionToken(token))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await req.json();
   await fs.writeFile(CONTENT_PATH, JSON.stringify(body, null, 2));
 

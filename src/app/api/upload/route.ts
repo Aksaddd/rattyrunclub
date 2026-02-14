@@ -1,10 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
 import fs from "fs/promises";
 import path from "path";
 
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 
-export async function POST(req: Request) {
+async function requireAuth(req: NextRequest): Promise<NextResponse | null> {
+  const token = req.cookies.get(SESSION_COOKIE)?.value;
+  if (!token || !(await verifySessionToken(token))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return null;
+}
+
+export async function POST(req: NextRequest) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
 
@@ -26,7 +38,10 @@ export async function POST(req: Request) {
   return NextResponse.json({ path: `/uploads/${safeName}` });
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
+  const authError = await requireAuth(req);
+  if (authError) return authError;
+
   const { filePath } = await req.json();
 
   // Only allow deleting from /uploads/

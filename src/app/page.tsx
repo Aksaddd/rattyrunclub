@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Countdown from "@/components/Countdown";
+import MapModal from "@/components/MapModal";
 import DraggableLogo from "@/components/DraggableLogo";
 import { getContent } from "@/lib/content";
 
@@ -13,7 +14,7 @@ export default async function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* ── Left Panel ── */}
-      <div className="relative flex w-full flex-col justify-between p-10 sm:p-12 md:w-[42%] md:p-14 lg:p-20">
+      <div className="relative flex w-full flex-col justify-between p-12 sm:p-14 md:w-[42%] md:p-16 lg:p-24">
         <Nav />
 
         <nav className="mt-16 flex flex-col gap-4 md:mt-0">
@@ -52,25 +53,11 @@ export default async function Home() {
             <p className="text-[14px] font-light leading-relaxed text-muted">
               {home.upcomingRun.time}
             </p>
-            <p className="text-[14px] font-light leading-relaxed text-muted">
-              {home.upcomingRun.location}
-            </p>
+            <MapModal
+              mapEmbedUrl={home.upcomingRun.mapEmbedUrl}
+              locationName={home.upcomingRun.location}
+            />
           </div>
-
-          {home.upcomingRun.mapEmbedUrl && (
-            <div className="overflow-hidden rounded border border-border">
-              <iframe
-                src={home.upcomingRun.mapEmbedUrl}
-                width="100%"
-                height="160"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Run location"
-              />
-            </div>
-          )}
 
           <p className="max-w-[320px] text-[14px] font-light leading-[1.7] text-muted">
             {home.description}

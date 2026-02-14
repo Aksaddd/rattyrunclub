@@ -3,6 +3,140 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 
+/* ═══════════════════════════════════════════
+   Auth gate — login / first-time setup
+   ═══════════════════════════════════════════ */
+
+function AuthGate({ onAuthenticated }: { onAuthenticated: () => void }) {
+  const [mode, setMode] = useState<"loading" | "setup" | "login">("loading");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.authenticated) {
+          onAuthenticated();
+        } else {
+          setMode(data.needsSetup ? "setup" : "login");
+        }
+      });
+  }, [onAuthenticated]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (mode === "setup" && password !== confirm) {
+      setError("Passwords don't match");
+      return;
+    }
+
+    setSubmitting(true);
+    const res = await fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        password,
+        action: mode === "setup" ? "setup" : "login",
+      }),
+    });
+
+    const data = await res.json();
+    setSubmitting(false);
+
+    if (!res.ok) {
+      setError(data.error || "Something went wrong");
+      return;
+    }
+
+    onAuthenticated();
+  };
+
+  if (mode === "loading") {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-[13px] text-muted">Loading...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen items-center justify-center bg-background">
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full max-w-[360px] flex-col gap-6 px-6"
+      >
+        <div className="flex flex-col gap-1">
+          <h1 className="text-[13px] font-semibold uppercase tracking-[0.15em]">
+            {mode === "setup" ? "Create Admin Password" : "Admin Login"}
+          </h1>
+          <p className="text-[13px] font-light text-muted">
+            {mode === "setup"
+              ? "Set a password to protect your admin panel."
+              : "Enter your password to continue."}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoFocus
+            required
+            minLength={8}
+            className="w-full border border-border bg-background px-4 py-3 text-[14px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+
+          {mode === "setup" && (
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              minLength={8}
+              className="w-full border border-border bg-background px-4 py-3 text-[14px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+            />
+          )}
+        </div>
+
+        {error && (
+          <p className="text-[13px] font-light text-red-500">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full border border-foreground bg-foreground py-3 text-[12px] font-semibold uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-80 disabled:opacity-50"
+        >
+          {submitting
+            ? "..."
+            : mode === "setup"
+              ? "Create Password"
+              : "Log In"}
+        </button>
+
+        <Link
+          href="/"
+          className="text-center text-[12px] font-light text-muted"
+        >
+          Back to site
+        </Link>
+      </form>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Admin panel (existing)
+   ═══════════════════════════════════════════ */
+
 interface Content {
   clubName: string;
   tagline: string;
@@ -24,6 +158,20 @@ interface Content {
 }
 
 export default function AdminPage() {
+  const [authenticated, setAuthenticated] = useState(false);
+
+  const handleAuthenticated = useCallback(() => {
+    setAuthenticated(true);
+  }, []);
+
+  if (!authenticated) {
+    return <AuthGate onAuthenticated={handleAuthenticated} />;
+  }
+
+  return <AdminPanel />;
+}
+
+function AdminPanel() {
   const [content, setContent] = useState<Content | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -48,6 +196,11 @@ export default function AdminPage() {
     setTimeout(() => setSaved(false), 2000);
   }, []);
 
+  const logout = async () => {
+    await fetch("/api/auth", { method: "DELETE" });
+    window.location.reload();
+  };
+
   const uploadImage = useCallback(
     async (target: "home.heroImage" | "about.image") => {
       const input = document.createElement("input");
@@ -66,7 +219,6 @@ export default function AdminPage() {
 
         const updated = { ...content };
         if (target === "home.heroImage") {
-          // Delete old image if it's an upload
           if (updated.home.heroImage.startsWith("/uploads/")) {
             await fetch("/api/upload", {
               method: "DELETE",
@@ -127,7 +279,7 @@ export default function AdminPage() {
   if (!content) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p className="text-[12px] text-muted">Loading...</p>
+        <p className="text-[13px] text-muted">Loading...</p>
       </div>
     );
   }
@@ -151,13 +303,21 @@ export default function AdminPage() {
             View site
           </Link>
         </div>
-        <button
-          onClick={() => save(content)}
-          disabled={saving}
-          className="border border-foreground bg-foreground px-5 py-2 text-[11px] font-medium uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-80 disabled:opacity-50"
-        >
-          {saving ? "Saving..." : saved ? "Saved" : "Save Changes"}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={logout}
+            className="border border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.15em] text-muted transition-colors hover:border-foreground hover:text-foreground"
+          >
+            Log Out
+          </button>
+          <button
+            onClick={() => save(content)}
+            disabled={saving}
+            className="border border-foreground bg-foreground px-5 py-2 text-[11px] font-medium uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-80 disabled:opacity-50"
+          >
+            {saving ? "Saving..." : saved ? "Saved" : "Save Changes"}
+          </button>
+        </div>
       </div>
 
       <div className="mx-auto max-w-[720px] px-6 py-12">

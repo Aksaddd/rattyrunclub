@@ -2,6 +2,28 @@
 
 import { useState } from "react";
 
+function toEmbedUrl(url: string): string {
+  // Already a proper embed URL — use as-is
+  if (url.includes("google.com/maps/embed")) return url;
+
+  // For any other URL or text, use the no-API-key embed format
+  // This works with place names, addresses, or coordinates
+  return `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+}
+
+function getDirectionsUrl(url: string, locationName: string): string {
+  // If it's already a Google Maps URL, link directly
+  if (
+    url.includes("google.com/maps") ||
+    url.includes("goo.gl/maps") ||
+    url.includes("maps.app.goo.gl")
+  ) {
+    return url;
+  }
+  // Otherwise search for the location name
+  return `https://www.google.com/maps/search/${encodeURIComponent(locationName)}`;
+}
+
 export default function MapModal({
   mapEmbedUrl,
   locationName,
@@ -18,6 +40,9 @@ export default function MapModal({
       </p>
     );
   }
+
+  const embedSrc = toEmbedUrl(mapEmbedUrl);
+  const directLink = getDirectionsUrl(mapEmbedUrl, locationName);
 
   return (
     <>
@@ -53,7 +78,7 @@ export default function MapModal({
             </p>
             <div className="overflow-hidden border border-border">
               <iframe
-                src={mapEmbedUrl}
+                src={embedSrc}
                 width="100%"
                 height="360"
                 style={{ border: 0 }}
@@ -63,6 +88,14 @@ export default function MapModal({
                 title="Run location"
               />
             </div>
+            <a
+              href={directLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-[12px] font-medium uppercase tracking-[0.12em] text-muted underline underline-offset-4 transition-colors hover:text-foreground"
+            >
+              Open in Google Maps
+            </a>
           </div>
         </div>
       )}

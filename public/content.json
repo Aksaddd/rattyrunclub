@@ -1,0 +1,27 @@
+{
+  "clubName": "Ratty Run",
+  "tagline": "A community run club based in New York City.",
+  "instagram": "https://instagram.com/therattyrun",
+  "instagramHandle": "@therattyrun",
+  "strava": "https://strava.com",
+  "location": "NYC",
+  "home": {
+    "heroImage": "",
+    "weeklyRuns": {
+      "day": "Every Saturday",
+      "time": "8:00 AM",
+      "location": "Central Park, NYC"
+    },
+    "description": "A community run club in New York City. All paces welcome. We run together, we grow together."
+  },
+  "about": {
+    "image": "",
+    "heading": "About Ratty Run",
+    "paragraphs": [
+      "Add your first paragraph here. Tell people what Ratty Run is all about — the mission, the vibe, the community.",
+      "Add a second paragraph. Maybe talk about how the club started, who it's for, and what makes it different.",
+      "Add a third paragraph if you'd like. Share the vision for the future, upcoming plans, or anything else."
+    ],
+    "imageCaption": ""
+  }
+}

@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { siteContent } from "@/lib/content";
-
 export default function Nav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -24,7 +22,7 @@ export default function Nav() {
           viewBox="0 0 120 50"
           className="h-8 w-auto md:h-9"
           fill="currentColor"
-          aria-label={siteContent.clubName}
+          aria-label="Ratty Run"
         >
           <text
             x="4"

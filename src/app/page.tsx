@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const content = await getContent();
-  const { home, instagram, instagramHandle, strava, location } = content;
+  const { clubName, home, instagram, instagramHandle, strava, location } = content;
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
@@ -116,6 +116,15 @@ export default async function Home() {
             alt="Ratty Run"
             className="h-full w-full object-cover"
           />
+          {home.logoImage && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src={home.logoImage}
+                alt={clubName}
+                className="w-[60%] max-w-[480px] object-contain drop-shadow-lg"
+              />
+            </div>
+          )}
         </div>
       </div>
 

@@ -146,6 +146,7 @@ interface Content {
   location: string;
   home: {
     heroImage: string;
+    logoImage: string;
     upcomingRun: { date: string; time: string; location: string; mapEmbedUrl: string };
     description: string;
   };
@@ -202,7 +203,7 @@ function AdminPanel() {
   };
 
   const uploadImage = useCallback(
-    async (target: "home.heroImage" | "about.image") => {
+    async (target: "home.heroImage" | "home.logoImage" | "about.image") => {
       const input = document.createElement("input");
       input.type = "file";
       input.accept = "image/*";
@@ -227,6 +228,15 @@ function AdminPanel() {
             });
           }
           updated.home = { ...updated.home, heroImage: path };
+        } else if (target === "home.logoImage") {
+          if (updated.home.logoImage && updated.home.logoImage.startsWith("/uploads/")) {
+            await fetch("/api/upload", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ filePath: updated.home.logoImage }),
+            });
+          }
+          updated.home = { ...updated.home, logoImage: path };
         } else {
           if (updated.about.image.startsWith("/uploads/")) {
             await fetch("/api/upload", {
@@ -248,15 +258,17 @@ function AdminPanel() {
   );
 
   const removeImage = useCallback(
-    async (target: "home.heroImage" | "about.image") => {
+    async (target: "home.heroImage" | "home.logoImage" | "about.image") => {
       if (!content) return;
       const updated = { ...content };
       const imgPath =
         target === "home.heroImage"
           ? updated.home.heroImage
-          : updated.about.image;
+          : target === "home.logoImage"
+            ? updated.home.logoImage
+            : updated.about.image;
 
-      if (imgPath.startsWith("/uploads/")) {
+      if (imgPath && imgPath.startsWith("/uploads/")) {
         await fetch("/api/upload", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -266,6 +278,8 @@ function AdminPanel() {
 
       if (target === "home.heroImage") {
         updated.home = { ...updated.home, heroImage: "/default-hero.svg" };
+      } else if (target === "home.logoImage") {
+        updated.home = { ...updated.home, logoImage: "" };
       } else {
         updated.about = { ...updated.about, image: "/default-about.svg" };
       }
@@ -363,6 +377,13 @@ function AdminPanel() {
             uploading={uploading === "home.heroImage"}
             onUpload={() => uploadImage("home.heroImage")}
             onRemove={() => removeImage("home.heroImage")}
+          />
+          <ImageField
+            label="Logo (overlaid on hero image)"
+            src={content.home.logoImage}
+            uploading={uploading === "home.logoImage"}
+            onUpload={() => uploadImage("home.logoImage")}
+            onRemove={() => removeImage("home.logoImage")}
           />
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">

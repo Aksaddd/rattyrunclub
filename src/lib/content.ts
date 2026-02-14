@@ -7,6 +7,7 @@ export interface SiteContent {
   location: string;
   home: {
     heroImage: string;
+    logoImage: string;
     upcomingRun: { date: string; time: string; location: string; mapEmbedUrl: string };
     description: string;
   };

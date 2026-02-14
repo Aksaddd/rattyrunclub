@@ -10,36 +10,32 @@
   --font-mono: "SF Mono", "Consolas", monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
 
-html,
-body {
-  height: 100%;
-}
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  ::selection {
+    background: #000;
+    color: #fff;
+  }
 
-::selection {
-  background: #000;
-  color: #fff;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:hover {
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
+  a:hover {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
 }

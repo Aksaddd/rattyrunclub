@@ -152,6 +152,15 @@ interface Product {
   images: string[];
 }
 
+interface ScheduleEvent {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  location: string;
+  image: string;
+}
+
 interface Content {
   clubName: string;
   tagline: string;
@@ -172,6 +181,7 @@ interface Content {
     paragraphs: string[];
     imageCaption: string;
   };
+  schedule: ScheduleEvent[];
   gallery: GalleryItem[];
   products: Product[];
 }
@@ -561,6 +571,11 @@ function AdminPanel() {
           </div>
         </Section>
 
+        {/* ── Schedule ── */}
+        <Section title="Schedule" onSave={() => save(content)} saving={saving} saved={saved}>
+          <ScheduleAdmin content={content} update={update} save={save} />
+        </Section>
+
         {/* ── Gallery ── */}
         <Section title="Gallery" onSave={() => save(content)} saving={saving} saved={saved}>
           <GalleryAdmin content={content} update={update} save={save} />
@@ -573,6 +588,173 @@ function AdminPanel() {
 
         <ChangePassword />
       </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Schedule Admin
+   ═══════════════════════════════════════════ */
+
+function ScheduleAdmin({
+  content,
+  update,
+  save,
+}: {
+  content: Content;
+  update: (fn: (c: Content) => Content) => void;
+  save: (data: Content) => Promise<void>;
+}) {
+  const addEvent = () => {
+    const event: ScheduleEvent = {
+      id: Date.now().toString(),
+      title: "",
+      date: "",
+      description: "",
+      location: "",
+      image: "",
+    };
+    update((c) => ({ ...c, schedule: [...c.schedule, event] }));
+  };
+
+  const removeEvent = async (id: string) => {
+    const event = content.schedule.find((e) => e.id === id);
+    if (event?.image?.startsWith("/uploads/")) {
+      await fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filePath: event.image }),
+      });
+    }
+    const updated = { ...content, schedule: content.schedule.filter((e) => e.id !== id) };
+    update(() => updated);
+    await save(updated);
+  };
+
+  const updateEvent = (id: string, partial: Partial<ScheduleEvent>) => {
+    update((c) => ({
+      ...c,
+      schedule: c.schedule.map((e) => (e.id === id ? { ...e, ...partial } : e)),
+    }));
+  };
+
+  const uploadEventImage = (eventId: string) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const { path } = await res.json();
+      const event = content.schedule.find((e) => e.id === eventId);
+      if (event?.image?.startsWith("/uploads/")) {
+        await fetch("/api/upload", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filePath: event.image }),
+        });
+      }
+      const updated = {
+        ...content,
+        schedule: content.schedule.map((e) =>
+          e.id === eventId ? { ...e, image: path } : e
+        ),
+      };
+      update(() => updated);
+      await save(updated);
+    };
+    input.click();
+  };
+
+  const sorted = [...content.schedule].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  return (
+    <div className="flex flex-col gap-6">
+      {sorted.map((event) => (
+        <div key={event.id} className="flex flex-col gap-4 border border-border p-4">
+          <div className="flex items-start justify-between">
+            <p className="text-[12px] font-medium uppercase tracking-[0.12em]">
+              {event.title || "New Event"}
+            </p>
+            <button
+              onClick={() => removeEvent(event.id)}
+              className="text-[11px] font-medium uppercase tracking-[0.12em] text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </div>
+
+          {/* Event image */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+              Event Image
+            </label>
+            {event.image ? (
+              <div className="flex items-start gap-3">
+                <img src={event.image} alt="" className="h-28 w-28 object-cover" />
+                <button
+                  onClick={() => uploadEventImage(event.id)}
+                  className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted hover:text-foreground"
+                >
+                  Replace
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => uploadEventImage(event.id)}
+                className="flex h-28 w-28 items-center justify-center border border-dashed border-border text-[11px] text-muted hover:border-foreground hover:text-foreground"
+              >
+                + Upload
+              </button>
+            )}
+          </div>
+
+          <input
+            type="text"
+            value={event.title}
+            onChange={(e) => updateEvent(event.id, { title: e.target.value })}
+            placeholder="Event title"
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+              Event Date
+            </label>
+            <input
+              type="datetime-local"
+              value={event.date.slice(0, 16)}
+              onChange={(e) => updateEvent(event.id, { date: e.target.value + ":00" })}
+              className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none focus:border-foreground"
+            />
+          </div>
+          <input
+            type="text"
+            value={event.location}
+            onChange={(e) => updateEvent(event.id, { location: e.target.value })}
+            placeholder="Location"
+            className="w-full border border-border bg-background px-3 py-2 text-[13px] font-light text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+          <textarea
+            value={event.description}
+            onChange={(e) => updateEvent(event.id, { description: e.target.value })}
+            placeholder="Event description"
+            rows={3}
+            className="w-full resize-none border border-border bg-background px-3 py-2 text-[13px] font-light leading-relaxed text-foreground outline-none placeholder:text-muted/50 focus:border-foreground"
+          />
+        </div>
+      ))}
+
+      <button
+        onClick={addEvent}
+        className="self-start border border-dashed border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted transition-colors hover:border-foreground hover:text-foreground"
+      >
+        + Add Event
+      </button>
     </div>
   );
 }

@@ -4,6 +4,15 @@ export interface GalleryItem {
   caption: string;
 }
 
+export interface ScheduleEvent {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  location: string;
+  image: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -33,6 +42,7 @@ export interface SiteContent {
     paragraphs: string[];
     imageCaption: string;
   };
+  schedule: ScheduleEvent[];
   gallery: GalleryItem[];
   products: Product[];
 }

@@ -14,7 +14,7 @@ export default async function AboutPage() {
         <Nav />
 
         <div className="mt-16 flex flex-1 flex-col justify-center md:mt-0">
-          <h1 className="text-[13px] font-medium uppercase tracking-[0.15em]">
+          <h1 className="text-[14px] font-semibold uppercase tracking-[0.15em]">
             {about.heading}
           </h1>
 
@@ -22,7 +22,7 @@ export default async function AboutPage() {
             {about.paragraphs.map((text, i) => (
               <p
                 key={i}
-                className="max-w-[420px] text-[13px] font-light leading-[1.8] text-muted"
+                className="max-w-[440px] text-[15px] font-light leading-[1.8] text-muted"
               >
                 {text}
               </p>
@@ -35,12 +35,12 @@ export default async function AboutPage() {
             href={instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] font-light tracking-[0.08em] text-muted"
+            className="text-[13px] font-light tracking-[0.06em] text-muted"
           >
             {instagramHandle}
           </a>
-          <span className="text-[11px] text-muted">·</span>
-          <span className="text-[11px] font-light tracking-[0.08em] text-muted">
+          <span className="text-[13px] text-muted">·</span>
+          <span className="text-[13px] font-light tracking-[0.06em] text-muted">
             NYC
           </span>
         </div>
@@ -56,7 +56,7 @@ export default async function AboutPage() {
 
         {about.imageCaption && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent p-6">
-            <p className="text-[11px] font-light tracking-[0.08em] text-white">
+            <p className="text-[13px] font-light tracking-[0.06em] text-white">
               {about.imageCaption}
             </p>
           </div>

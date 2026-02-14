@@ -14,28 +14,28 @@ export default async function Home() {
       <div className="relative flex w-full flex-col justify-between p-6 sm:p-8 md:w-[42%] md:p-10 lg:p-12">
         <Nav />
 
-        <nav className="mt-16 flex flex-col gap-3 md:mt-0">
+        <nav className="mt-16 flex flex-col gap-4 md:mt-0">
           <Link
             href="/about"
-            className="text-[13px] font-light tracking-[0.08em] text-foreground"
+            className="text-[15px] font-light tracking-[0.06em] text-foreground"
           >
             About
           </Link>
           <Link
             href="/schedule"
-            className="text-[13px] font-light tracking-[0.08em] text-foreground"
+            className="text-[15px] font-light tracking-[0.06em] text-foreground"
           >
             Schedule
           </Link>
           <Link
             href="/shop"
-            className="text-[13px] font-light tracking-[0.08em] text-foreground"
+            className="text-[15px] font-light tracking-[0.06em] text-foreground"
           >
             Collections
           </Link>
           <Link
             href="/connect"
-            className="text-[13px] font-light tracking-[0.08em] text-foreground"
+            className="text-[15px] font-light tracking-[0.06em] text-foreground"
           >
             Connect
           </Link>
@@ -55,18 +55,18 @@ export default async function Home() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <p className="text-[11px] font-medium uppercase tracking-[0.15em]">
+            <p className="text-[13px] font-medium uppercase tracking-[0.15em]">
               Weekly Runs
             </p>
-            <p className="text-[12px] font-light leading-relaxed text-muted">
+            <p className="text-[14px] font-light leading-relaxed text-muted">
               {home.weeklyRuns.day} — {home.weeklyRuns.time}
             </p>
-            <p className="text-[12px] font-light leading-relaxed text-muted">
+            <p className="text-[14px] font-light leading-relaxed text-muted">
               {home.weeklyRuns.location}
             </p>
           </div>
 
-          <p className="max-w-[280px] text-[12px] font-light leading-[1.7] text-muted">
+          <p className="max-w-[320px] text-[14px] font-light leading-[1.7] text-muted">
             {home.description}
           </p>
 
@@ -75,21 +75,21 @@ export default async function Home() {
               href={instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] font-light tracking-[0.08em] text-muted"
+              className="text-[13px] font-light tracking-[0.06em] text-muted"
             >
               {instagramHandle}
             </a>
-            <span className="text-[11px] text-muted">·</span>
+            <span className="text-[13px] text-muted">·</span>
             <a
               href={strava}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] font-light tracking-[0.08em] text-muted"
+              className="text-[13px] font-light tracking-[0.06em] text-muted"
             >
               Strava
             </a>
-            <span className="text-[11px] text-muted">·</span>
-            <span className="text-[11px] font-light tracking-[0.08em] text-muted">
+            <span className="text-[13px] text-muted">·</span>
+            <span className="text-[13px] font-light tracking-[0.06em] text-muted">
               {location}
             </span>
           </div>

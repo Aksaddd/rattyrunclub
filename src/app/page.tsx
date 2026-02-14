@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* ── Left Panel ── */}
-      <div className="relative flex w-full flex-col justify-between px-[48px] py-[40px] sm:px-[64px] sm:py-[48px] md:w-[42%] md:px-[72px] md:py-[56px] lg:px-[96px] lg:py-[72px]">
+      <div className="relative flex w-full flex-col justify-between px-[24px] py-[32px] sm:px-[32px] sm:py-[40px] md:w-[42%] md:px-[40px] md:py-[48px] lg:px-[48px] lg:py-[56px]">
         <Nav />
 
         <nav className="mt-16 flex flex-col gap-4 md:mt-0">

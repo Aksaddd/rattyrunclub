@@ -8,12 +8,12 @@ export default function Nav() {
   const isHome = pathname === "/";
 
   return (
-    <header className="flex w-full items-center justify-between">
-      {/* Logo — top left, larger */}
+    <header className="flex w-full items-center justify-between pr-2 md:pr-4">
+      {/* Logo — top left */}
       <Link href="/" className={isHome ? "pointer-events-none" : ""}>
         <svg
           viewBox="0 0 120 50"
-          className="h-11 w-auto md:h-13"
+          className="h-14 w-auto md:h-16 lg:h-[72px]"
           fill="currentColor"
           aria-label="Ratty Run"
         >

@@ -12,7 +12,7 @@ export default async function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* ── Left Panel ── */}
-      <div className="relative flex w-full flex-col justify-between p-8 sm:p-10 md:w-[42%] md:p-12 lg:p-16">
+      <div className="relative flex w-full flex-col justify-between p-10 sm:p-12 md:w-[42%] md:p-14 lg:p-20">
         <Nav />
 
         <nav className="mt-16 flex flex-col gap-4 md:mt-0">

@@ -10,7 +10,7 @@ export default async function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       {/* ── Left Panel: Text ── */}
-      <div className="flex w-full flex-col justify-between p-8 sm:p-10 md:w-[45%] md:p-12 lg:p-16">
+      <div className="flex w-full flex-col justify-between p-10 sm:p-12 md:w-[45%] md:p-14 lg:p-20">
         <Nav />
 
         <div className="mt-16 flex flex-1 flex-col justify-center md:mt-0">

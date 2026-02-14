@@ -8,7 +8,7 @@ export default function ContactPage() {
 
       <div className="mx-auto mt-16 flex w-full max-w-[520px] flex-1 flex-col justify-center md:mt-0">
         <h1 className="text-[14px] font-semibold uppercase tracking-[0.2em]">
-          Contact
+          Connect
         </h1>
         <p className="mt-4 text-[15px] font-light leading-relaxed text-muted">
           Have a question, want to collaborate, or just want to say hey? Reach

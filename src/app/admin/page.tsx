@@ -354,7 +354,7 @@ function AdminPanel() {
 
       <div className="mx-auto max-w-[720px] px-6 py-12">
         {/* ── Global ── */}
-        <Section title="Global">
+        <Section title="Global" onSave={() => save(content)} saving={saving} saved={saved}>
           <Field
             label="Club Name"
             value={content.clubName}
@@ -388,7 +388,7 @@ function AdminPanel() {
         </Section>
 
         {/* ── Home Page ── */}
-        <Section title="Home Page">
+        <Section title="Home Page" onSave={() => save(content)} saving={saving} saved={saved}>
           <ImageField
             label="Hero Image"
             src={content.home.heroImage}
@@ -482,7 +482,7 @@ function AdminPanel() {
         </Section>
 
         {/* ── About Page ── */}
-        <Section title="About Page">
+        <Section title="About Page" onSave={() => save(content)} saving={saving} saved={saved}>
           <ImageField
             label="About Image"
             src={content.about.image}
@@ -562,12 +562,12 @@ function AdminPanel() {
         </Section>
 
         {/* ── Gallery ── */}
-        <Section title="Gallery">
+        <Section title="Gallery" onSave={() => save(content)} saving={saving} saved={saved}>
           <GalleryAdmin content={content} update={update} save={save} />
         </Section>
 
         {/* ── Products ── */}
-        <Section title="Products (Shop)">
+        <Section title="Products (Shop)" onSave={() => save(content)} saving={saving} saved={saved}>
           <ProductsAdmin content={content} update={update} save={save} />
         </Section>
 
@@ -1003,9 +1003,15 @@ function ChangePassword() {
 function Section({
   title,
   children,
+  onSave,
+  saving,
+  saved,
 }: {
   title: string;
   children: React.ReactNode;
+  onSave?: () => void;
+  saving?: boolean;
+  saved?: boolean;
 }) {
   return (
     <section className="mb-14">
@@ -1013,6 +1019,15 @@ function Section({
         {title}
       </h2>
       <div className="flex flex-col gap-5">{children}</div>
+      {onSave && (
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="mt-6 border border-foreground bg-foreground px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.15em] text-background transition-opacity hover:opacity-80 disabled:opacity-50"
+        >
+          {saving ? "Saving..." : saved ? "Saved" : "Confirm Changes"}
+        </button>
+      )}
     </section>
   );
 }
